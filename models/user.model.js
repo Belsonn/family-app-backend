@@ -1,10 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
-  name: String,
   email: {
     type: String,
     required: [true, "User must provide an email."],
@@ -32,6 +30,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  familyUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "familyUser",
+  },
   activationToken: String,
 });
 
@@ -55,7 +57,6 @@ userSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
-
 
 const User = mongoose.model("User", userSchema);
 
