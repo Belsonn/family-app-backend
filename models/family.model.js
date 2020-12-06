@@ -9,6 +9,19 @@ const familySchema = new mongoose.Schema({
       ref: "FamilyUser",
     },
   ],
+  events: [
+    {
+      name: String,
+      color: String,
+      startDate: Date,
+      endDate: Date,
+      allDay: Boolean,
+      repeat: {
+        repeatType: String,
+        repeatEvery: String,
+      },
+    },
+  ],
   inviteToken: {
     type: String,
     uppercase: true,
@@ -21,13 +34,13 @@ const familySchema = new mongoose.Schema({
 });
 
 familySchema.pre(/^find/, function (next) {
-    this.select("-__v");
-    this.populate({
-      path: "users",
-      select: "-__v -email -active",
-    });
-    next();
+  this.select("-__v");
+  this.populate({
+    path: "users",
+    select: "-__v -password",
   });
+  next();
+});
 
 familySchema.pre("save", function (next) {
   if (this.isNew) {
