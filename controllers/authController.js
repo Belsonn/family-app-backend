@@ -1,6 +1,8 @@
 const User = require("./../models/user.model");
 const jwt_simple = require("jwt-simple");
 const globalError = require("./../utils/globalError");
+const FamilyUser = require("./../models/familyuser.model")
+const Family = require("./../models/family.model")
 // const Email = require("./../utils/email");
 
 const signToken = (id) => {
@@ -97,6 +99,32 @@ exports.login = async (req, res, next) => {
   createSendToken(user, 200, res);
 };
 
+exports.loginLocal = async (req, res, next) => {
+  const {familyUserId, password} = req.body;
+
+
+  if(!familyUserId || !password){
+    return next(new globalError("Provide ID and Password", 400));
+  }
+
+  const familyUser = await FamilyUser.findById(familyUserId).select("+password").select("+family");
+  
+
+  if(!familyUser || !(await familyUser.correctPassword(password, familyUser.password))) {
+    return next(new globalError("Incorrect password", 400));
+  }
+  const family = await Family.findById(familyUser.family);
+
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      familyUser,
+      family
+    }
+  })
+}
+
 // exports.activateAccount = async (req, res, next) => {
 //   let user = await User.findOne({ activationToken: req.body.activationToken });
 
@@ -146,3 +174,5 @@ exports.protect = async (req, res, next) => {
   req.user = currentUser;
   next();
 };
+
+

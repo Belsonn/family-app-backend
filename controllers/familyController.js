@@ -25,54 +25,61 @@ exports.createFamily = async (req, res, next) => {
 };
 
 exports.createFamilyNoUser = async (req, res, next) => {
-  const familyUser = await FamilyUser.create({
+  let familyUser = await FamilyUser.create({
     name: req.body.username,
     gender: req.body.gender,
     role: req.body.role,
-    password: req.body.password
+    password: req.body.password,
   });
-  if(!familyUser.id){
+  if (!familyUser.id) {
     return next(new globalError("Something went wrong, 500"));
   }
 
   const family = await Family.create({
     name: req.body.familyname,
     users: [familyUser.id],
-    createdBy: familyUser.id
-  })
+    createdBy: familyUser.id,
+  });
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      family
-    }
-  })
-}
-
-exports.joinFamily = async (req, res, next) => {
-  let user = await User.findById(req.user.id);
-
-  if (user.family) {
-    return next(new globalError("You already have a family"), 400);
-  }
-  let family = await Family.findOne({ inviteToken: req.body.inviteToken });
-
-  if (!family) {
-    return next(new globalError("There is no family with that token", 404));
-  }
-  if (family.users.find((el) => el == req.user.id)) {
-    return next(new globalError("You joined this family already"), 400);
-  }
-
-  user = await User.findByIdAndUpdate(
-    req.user.id,
+  familyUser = await FamilyUser.findByIdAndUpdate(
+    familyUser.id,
     { family: family.id },
     { new: true }
   );
 
+  res.status(201).json({
+    status: "success",
+    data: {
+      family,
+      familyUser,
+    },
+  });
+};
+
+exports.joinFamily = async (req, res, next) => {
+  let familyUser = await FamilyUser.create({
+    name: req.body.username,
+    gender: req.body.gender,
+    role: req.body.role,
+    password: req.body.password,
+    family: req.body.familyid,
+  });
+
+  // if (user.family) {
+  //   return next(new globalError("You already have a family"), 400);
+  // }
+  // let family = await Family.findOne({ inviteToken: req.body.inviteToken });
+
+  // if (!family) {
+  //   return next(new globalError("There is no family with that token", 404));
+  // }
+  // if (family.users.find((el) => el == req.user.id)) {
+  //   return next(new globalError("You joined this family already"), 400);
+  // }
+
   family = await Family.findByIdAndUpdate(
-    family.id,
-    { $push: { users: user.id } },
+    req.body.familyid,
+    { $push: { users: familyUser.id } },
     { new: true }
   );
 
@@ -80,6 +87,7 @@ exports.joinFamily = async (req, res, next) => {
     status: "success",
     data: {
       family,
+      familyUser,
     },
   });
 };
@@ -90,19 +98,28 @@ exports.checkInviteCode = async (req, res, next) => {
   const family = await Family.findOne({ inviteToken: code });
 
   let exists;
-  family ? exists = true : exists = false;
+  family ? (exists = true) : (exists = false);
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      exists: exists
-    }
-  })
-
-}
+  if (family) {
+    res.status(200).json({
+      status: "success",
+      data: {
+        familyId: family._id,
+        exists: exists,
+      },
+    });
+  } else {
+    res.status(200).json({
+      status: "success",
+      data: {
+        exists: exists,
+      },
+    });
+  }
+};
 
 exports.getFamily = async (req, res, next) => {
-    const family = await Family.findById(req.params.id);
+  const family = await Family.findById(req.params.id);
 
   if (!family) {
     return next(new globalError("There are no families with that ID", 404));
@@ -114,20 +131,92 @@ exports.getFamily = async (req, res, next) => {
       family,
     },
   });
-}
+};
 
 exports.getAllFamilies = async (req, res, next) => {
-  const families = await Family.find()
+  const families = await Family.find();
 
-  if(!families){
-    return next(new globalError("No families, 404"))
+  if (!families) {
+    return next(new globalError("No families, 404"));
   }
 
   res.status(200).json({
     status: "success",
     results: families.length,
     data: {
-      families
+      families,
+    },
+  });
+};
+
+exports.getMeAndFamily = async (req, res, next) => {
+
+  const familyUser = await FamilyUser.findById(req.params.familyuser);
+  const family = await Family.findById(req.params.family);
+  
+  if (!family || !familyUser) {
+    return next(
+      new globalError("There is no user or family with provided id", 404)
+    );
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      familyUser,
+      family,
+    },
+  });
+};
+
+exports.addEvent = async (req, res, next) => {
+  const event = {
+    name: req.body.name,
+    color: req.body.color,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    allDay: req.body.allDay,
+    repeat: {
+      repeatType: req.body.repeat.repeatType,
+      repeatEvery: req.body.repeat.repeatEvery,
+    },
+  };
+
+  let family = await Family.findById(req.params.family)
+
+  if(!family){
+    return next(new globalError("Wrong id provided", 400));
+  }
+
+   family = await Family.findByIdAndUpdate(
+    req.params.family,
+    {
+      $push: { events: event },
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      family,
+    },
+  });
+};
+
+exports.getEvents = async (req, res, next) => { 
+  const family = await Family.findById(req.params.family);
+
+  if(!family){
+    return next(new globalError("There is no familyID", 404))
+
+  }
+
+  res.status(200).json({
+    status: "success",
+    results: family.events.length,
+    data: {
+      events: family.events
     }
   })
 }

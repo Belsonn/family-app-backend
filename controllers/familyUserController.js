@@ -1,5 +1,5 @@
 const globalError = require("./../utils/globalError");
-const familyUser = require("./../models/familyUser.model");
+const FamilyUser = require("./../models/familyuser.model");
 
 exports.getMe = async (req, res, next) => {
   req.params.id = req.user.id;
@@ -7,7 +7,7 @@ exports.getMe = async (req, res, next) => {
 };
 
 exports.getUser = async (req, res, next) => {
-  const family = await familyUser.findById(req.params.id);
+  const user = await FamilyUser.findById(req.params.id);
 
   if (!user) {
     return next(new globalError("There are no users with that ID", 404));

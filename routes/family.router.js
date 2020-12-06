@@ -11,6 +11,9 @@ router.post("/join", familyController.joinFamily);
 
 router.get("/:id", familyController.getFamily);
 router.get("/code/:code", familyController.checkInviteCode);
+router.post("/:family/addEvent", familyController.addEvent);
+router.get("/:family/events", familyController.getEvents);
+router.get("/:family/:familyuser", familyController.getMeAndFamily)
 
 router.get("/", familyController.getAllFamilies);
 

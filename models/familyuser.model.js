@@ -21,14 +21,18 @@ const familyUserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    minlength: 6
+    minlength: 6,
+    select: false
   }
 });
-
-// userSchema.pre(/^find/, function (next) {
-//   this.select("-__v");
-//   next();
-// });/
+familyUserSchema.pre(/^find/, function (next) {
+  this.select("-__v");
+  this.populate({
+    path: "family",
+    select: "-__v -users -createdAt -createdBy -events",
+  });
+  next();
+});
 familyUserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
