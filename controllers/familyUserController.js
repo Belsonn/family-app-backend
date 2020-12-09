@@ -43,7 +43,7 @@ exports.addPhoto = async (req, res, next) => {
 
   // 3) Update user document
   const familyUser = await FamilyUser.findByIdAndUpdate(
-    req.params.familyUserId,
+    req.familyUser._id,
     req.body,
     {
       new: true,
@@ -66,7 +66,7 @@ exports.updateMe = async (req, res, next) => {
 }
 
 exports.getMe = async (req, res, next) => {
-  req.params.id = req.user.id;
+  req.params.id = req.familyUser.id;
   next();
 };
 

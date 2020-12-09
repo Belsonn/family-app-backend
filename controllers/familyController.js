@@ -1,5 +1,6 @@
 const globalError = require("./../utils/globalError");
 const Family = require("./../models/family.model");
+const authController = require("./authController");
 const User = require("./../models/user.model");
 const FamilyUser = require("./../models/familyuser.model");
 
@@ -34,7 +35,6 @@ exports.createFamilyNoUser = async (req, res, next) => {
     password: req.body.password,
   });
 
-
   if (!familyUser.id) {
     return next(new globalError("Something went wrong, 500"));
   }
@@ -51,17 +51,11 @@ exports.createFamilyNoUser = async (req, res, next) => {
     { new: true }
   );
 
-  res.status(201).json({
-    status: "success",
-    data: {
-      family,
-      familyUser,
-    },
-  });
+  authController.createSendToken(familyUser, 200, res);
 };
 
 const setDefaultPhoto = (req, role, gender) => {
-  const url = req.protocol + "://" + req.get("host") + "/photos/users/"
+  const url = req.protocol + "://" + req.get("host") + "/photos/users/";
   if (role == "parent" && gender == "male") {
     return url + "defaultMen.jpg";
   } else if (role == "parent" && gender == "female") {
@@ -85,32 +79,13 @@ exports.joinFamily = async (req, res, next) => {
     family: req.body.familyid,
   });
 
-
-  // if (user.family) {
-  //   return next(new globalError("You already have a family"), 400);
-  // }
-  // let family = await Family.findOne({ inviteToken: req.body.inviteToken });
-
-  // if (!family) {
-  //   return next(new globalError("There is no family with that token", 404));
-  // }
-  // if (family.users.find((el) => el == req.user.id)) {
-  //   return next(new globalError("You joined this family already"), 400);
-  // }
-
   family = await Family.findByIdAndUpdate(
     req.body.familyid,
     { $push: { users: familyUser.id } },
     { new: true }
   );
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      family,
-      familyUser,
-    },
-  });
+  authController.createSendToken(familyUser, 200, res);
 };
 
 exports.checkInviteCode = async (req, res, next) => {
@@ -171,8 +146,8 @@ exports.getAllFamilies = async (req, res, next) => {
 };
 
 exports.getMeAndFamily = async (req, res, next) => {
-  const familyUser = await FamilyUser.findById(req.params.familyuser);
-  const family = await Family.findById(req.params.family);
+  const familyUser = await FamilyUser.findById(req.familyUser.id);
+  const family = await Family.findById(req.family);
 
   if (!family || !familyUser) {
     return next(
@@ -196,20 +171,24 @@ exports.addEvent = async (req, res, next) => {
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     allDay: req.body.allDay,
-    repeat: {
-      repeatType: req.body.repeat.repeatType,
-      repeatEvery: req.body.repeat.repeatEvery,
-    },
+    repeat: null,
   };
 
-  let family = await Family.findById(req.params.family);
+  if (req.body.repeat) {
+    event.repeat = {
+      repeatType: req.body.repeat.repeatType,
+      repeatEvery: req.body.repeat.repeatEvery,
+    };
+  }
+
+  let family = await Family.findById(req.family._id);
 
   if (!family) {
     return next(new globalError("Wrong id provided", 400));
   }
 
   family = await Family.findByIdAndUpdate(
-    req.params.family,
+    req.family._id,
     {
       $push: { events: event },
     },
@@ -225,7 +204,7 @@ exports.addEvent = async (req, res, next) => {
 };
 
 exports.getEvents = async (req, res, next) => {
-  const family = await Family.findById(req.params.family);
+  const family = await Family.findById(req.family._id);
 
   if (!family) {
     return next(new globalError("There is no familyID", 404));

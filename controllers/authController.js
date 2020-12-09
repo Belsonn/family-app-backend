@@ -1,8 +1,8 @@
 const User = require("./../models/user.model");
 const jwt_simple = require("jwt-simple");
 const globalError = require("./../utils/globalError");
-const FamilyUser = require("./../models/familyuser.model")
-const Family = require("./../models/family.model")
+const FamilyUser = require("./../models/familyuser.model");
+const Family = require("./../models/family.model");
 // const Email = require("./../utils/email");
 
 const signToken = (id) => {
@@ -12,8 +12,8 @@ const signToken = (id) => {
   );
 };
 
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
+exports.createSendToken = (familyUser, statusCode, res) => {
+  const token = signToken(familyUser._id);
   const expiresIn = new Date(
     Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
   );
@@ -27,14 +27,15 @@ const createSendToken = (user, statusCode, res) => {
 
   res.cookie("jwt", token, cookieOptions);
 
-  user.password = undefined;
+  familyUser.password = undefined;
+
 
   res.status(statusCode).json({
     status: "success",
     token,
     expiresIn,
     data: {
-      user,
+      familyUser,
     },
   });
 };
@@ -100,30 +101,34 @@ exports.login = async (req, res, next) => {
 };
 
 exports.loginLocal = async (req, res, next) => {
-  const {familyUserId, password} = req.body;
+  const { familyUserId, password } = req.body;
 
-
-  if(!familyUserId || !password){
+  if (!familyUserId || !password) {
     return next(new globalError("Provide ID and Password", 400));
   }
 
-  const familyUser = await FamilyUser.findById(familyUserId).select("+password").select("+family");
-  
+  const familyUser = await FamilyUser.findById(familyUserId)
+    .select("+password")
+    .select("+family");
 
-  if(!familyUser || !(await familyUser.correctPassword(password, familyUser.password))) {
+  if (
+    !familyUser ||
+    !(await familyUser.correctPassword(password, familyUser.password))
+  ) {
     return next(new globalError("Incorrect password", 400));
   }
   const family = await Family.findById(familyUser.family);
 
+  createSendToken(familyUser, 200, res);
 
-  res.status(200).json({
-    status: "success",
-    data: {
-      familyUser,
-      family
-    }
-  })
-}
+  // res.status(200).json({
+  //   status: "success",
+  //   data: {
+  //     familyUser,
+  //     family
+  //   }
+  // })
+};
 
 // exports.activateAccount = async (req, res, next) => {
 //   let user = await User.findOne({ activationToken: req.body.activationToken });
@@ -160,8 +165,7 @@ exports.protect = async (req, res, next) => {
     );
   }
   const decoded = await jwt_simple.decode(token, process.env.JWT_SECRET);
-
-  const currentUser = await User.findById(decoded.id);
+  const currentUser = await FamilyUser.findById(decoded.id);
   if (!currentUser) {
     return next(
       new globalError(
@@ -171,8 +175,7 @@ exports.protect = async (req, res, next) => {
     );
   }
 
-  req.user = currentUser;
+  req.familyUser = currentUser;
+  req.family = currentUser.family // ? ? ? 
   next();
 };
-
-

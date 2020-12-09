@@ -8,13 +8,15 @@ const router = express.Router();
 router.post("/create", familyController.createFamily);
 router.post("/nouser/create", familyController.createFamilyNoUser);
 router.post("/join", familyController.joinFamily);
+router.get("/all", familyController.getAllFamilies);
 
-router.get("/:id", familyController.getFamily);
 router.get("/code/:code", familyController.checkInviteCode);
-router.post("/:family/addEvent", familyController.addEvent);
-router.get("/:family/events", familyController.getEvents);
-router.get("/:family/:familyuser", familyController.getMeAndFamily)
+router.get("/family/:id", familyController.getFamily);
 
-router.get("/", familyController.getAllFamilies);
+router.use(authController.protect);
+router.post("/addEvent", familyController.addEvent);
+router.get("/events", familyController.getEvents);
+router.get("/myFamily", familyController.getMeAndFamily)
+
 
 module.exports = router;
