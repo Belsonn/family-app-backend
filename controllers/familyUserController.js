@@ -1,5 +1,7 @@
 const globalError = require("./../utils/globalError");
 const FamilyUser = require("./../models/familyuser.model");
+const Family = require("./../models/family.model");
+
 const multer = require("multer");
 const sharp = require("sharp");
 
@@ -48,14 +50,20 @@ exports.addPhoto = async (req, res, next) => {
       runValidators: true,
     }
   );
+  const family = await Family.findById(familyUser.family)
 
   res.status(200).json({
     status: "success",
     data: {
       familyUser,
+      family
     },
   });
 };
+
+exports.updateMe = async (req, res, next) => { 
+  
+}
 
 exports.getMe = async (req, res, next) => {
   req.params.id = req.user.id;
