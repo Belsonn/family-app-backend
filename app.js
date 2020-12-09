@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan')
+const path = require("path");
 const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/user.router');
 const familyRouter = require('./routes/family.router');
@@ -14,6 +15,8 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
+
+app.use("/photos/users", express.static(path.join("./photos/users")));
 
 // CORS
 app.use(cors());

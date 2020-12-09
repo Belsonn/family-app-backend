@@ -23,7 +23,10 @@ const familyUserSchema = new mongoose.Schema({
     type: String,
     minlength: 6,
     select: false
-  }
+  },
+  dateOfBirth: Date,
+  photo: String,
+  points: Number,
 });
 familyUserSchema.pre(/^find/, function (next) {
   this.select("-__v");
