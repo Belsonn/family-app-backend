@@ -11,5 +11,6 @@ router.post("/login", authController.loginLocal);
 router.use(authController.protect);
 
 router.patch('/addPhoto', familyUserController.uploadUserPhoto, familyUserController.resizeUserPhoto, familyUserController.addPhoto);
+router.patch('/updateMe', familyUserController.updateMe);
 
 module.exports = router;
