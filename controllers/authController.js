@@ -52,7 +52,7 @@ exports.signup = async (req, res, next) => {
   // const activateToken = newUser.createActivationToken();
   await newUser.save({ validateBeforeSave: false });
 
-  createSendToken(newUser, 200, res);
+  this.createSendToken(newUser, 200, res);
 
   // let activationUrl;
 
@@ -97,7 +97,7 @@ exports.login = async (req, res, next) => {
     );
   }
 
-  createSendToken(user, 200, res);
+  this.createSendToken(user, 200, res);
 };
 
 exports.loginLocal = async (req, res, next) => {
@@ -119,7 +119,7 @@ exports.loginLocal = async (req, res, next) => {
   }
   const family = await Family.findById(familyUser.family);
 
-  createSendToken(familyUser, 200, res);
+  this.createSendToken(familyUser, 200, res);
 
   // res.status(200).json({
   //   status: "success",
