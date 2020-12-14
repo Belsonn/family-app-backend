@@ -9,6 +9,23 @@ const familySchema = new mongoose.Schema({
       ref: "FamilyUser",
     },
   ],
+  groceries: {
+    type: [
+      {
+        // category: {
+        //   name: String,
+        //   icon: String
+        // },
+        item: {
+          name: String,
+          quantity: Number,
+          details: String
+        },
+        completedAt: Date
+      }
+    ],
+    default: []
+  },
   events: [
     {
       name: String,
