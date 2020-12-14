@@ -19,12 +19,17 @@ const familySchema = new mongoose.Schema({
         item: {
           name: String,
           quantity: Number,
-          details: String
+          details: String,
         },
-        completedAt: Date
-      }
+        createdBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "FamilyUser",
+        },
+        createdAt: Date,
+        completedAt: Date,
+      },
     ],
-    default: []
+    default: [],
   },
   events: [
     {
@@ -34,13 +39,15 @@ const familySchema = new mongoose.Schema({
       endDate: Date,
       points: Number,
       allDay: Boolean,
-      users: [{
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "FamilyUser"
+      users: [
+        {
+          user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "FamilyUser",
+          },
+          completed: Boolean,
         },
-        completed: Boolean
-      }],
+      ],
       repeat: {
         repeatType: String,
         repeatEvery: String,
@@ -63,6 +70,13 @@ familySchema.pre(/^find/, function (next) {
   this.populate({
     path: "users",
     select: "-__v -password -family",
+  });
+  this.populate({
+    path: "groceries",
+    populate: {
+      path: "createdBy",
+      select: "-__v -password -family -photo -dateOfBirth -gender",
+    },
   });
   next();
 });

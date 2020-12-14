@@ -22,7 +22,7 @@ exports.uploadUserPhoto = upload.single("photo");
 exports.resizeUserPhoto = async (req, res, next) => {
   if (!req.file) return next();
 
-  req.file.filename = `user-${req.params.familyUserId}.jpeg`;
+  req.file.filename = `user-${req.familyUser._id}.jpeg`;
 
   await sharp(req.file.buffer)
     .resize(200, 200)

@@ -231,6 +231,8 @@ exports.addGrocery = async (req, res, next) => {
       quantity: req.body.quantity,
       details: req.body.details,
     },
+    createdAt: Date.now(),
+    createdBy: req.familyUser._id,
     completedAt: null,
   };
 
