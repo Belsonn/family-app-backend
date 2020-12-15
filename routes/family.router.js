@@ -18,6 +18,7 @@ router.get("/myFamily", familyController.getMeAndFamily)
 router.post("/addEvent", familyController.addEvent);
 router.get("/events", familyController.getEvents);
 router.post("/addGrocery", familyController.addGrocery);
+router.patch("/editGroceries", familyController.editGroceries);
 
 
 module.exports = router;

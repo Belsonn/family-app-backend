@@ -198,7 +198,7 @@ exports.addEvent = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      family
+      family,
     },
   });
 };
@@ -214,7 +214,7 @@ exports.getEvents = async (req, res, next) => {
     status: "success",
     results: family.events.length,
     data: {
-      family
+      family,
     },
   });
 };
@@ -247,7 +247,26 @@ exports.addGrocery = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      family
+      family,
+    },
+  });
+};
+
+exports.editGroceries = async (req, res, next) => {
+  let family = await Family.findById(req.family._id);
+
+  if (!family) {
+    return next(new globalError("There is no familyID", 404));
+  }
+
+  family = await Family.findByIdAndUpdate(req.family._id, req.body, {
+    new: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      groceries: family.groceries
     }
   })
 };
