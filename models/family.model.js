@@ -12,21 +12,32 @@ const familySchema = new mongoose.Schema({
   groceries: {
     type: [
       {
-        // category: {
-        //   name: String,
-        //   icon: String
-        // },
-        item: {
-          name: String,
-          quantity: Number,
-          details: String,
+        name: String,
+        list: {
+          type: [
+            {
+              // category: {
+              //   name: String,
+              //   icon: String
+              // },
+              item: {
+                name: String,
+                quantity: Number,
+                details: String,
+              },
+              createdBy: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "FamilyUser",
+              },
+              createdAt: Date,
+              completedAt: Date,
+            },
+          ],
         },
         createdBy: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "FamilyUser",
-        },
-        createdAt: Date,
-        completedAt: Date,
+          ref: "FamilyUser"
+        }
       },
     ],
     default: [],

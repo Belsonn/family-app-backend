@@ -1,6 +1,7 @@
 const express = require("express");
 const authController = require("./../controllers/authController");
 const familyController = require("./../controllers/familyController");
+const groceriesController = require("./../controllers/groceriesController");
 const router = express.Router();
 
 // router.use(authController.protect);
@@ -17,8 +18,10 @@ router.use(authController.protect);
 router.get("/myFamily", familyController.getMeAndFamily)
 router.post("/addEvent", familyController.addEvent);
 router.get("/events", familyController.getEvents);
-router.post("/addGrocery", familyController.addGrocery);
-router.patch("/editGroceries", familyController.editGroceries);
+router.post("/createList", groceriesController.createList);
+router.post("/addGrocery", groceriesController.addGrocery);
+router.patch("/editList", groceriesController.updateList);
+router.patch("/deleteList", groceriesController.deleteList);
 
 
 module.exports = router;
