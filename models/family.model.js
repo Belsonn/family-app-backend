@@ -9,39 +9,12 @@ const familySchema = new mongoose.Schema({
       ref: "FamilyUser",
     },
   ],
-  groceries: {
-    type: [
-      {
-        name: String,
-        list: {
-          type: [
-            {
-              // category: {
-              //   name: String,
-              //   icon: String
-              // },
-              item: {
-                name: String,
-                quantity: Number,
-                details: String,
-              },
-              createdBy: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "FamilyUser",
-              },
-              createdAt: Date,
-              completedAt: Date,
-            },
-          ],
-        },
-        createdBy: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "FamilyUser"
-        }
-      },
-    ],
-    default: [],
-  },
+  shoppingLists: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ShoppingList",
+    },
+  ],
   events: [
     {
       name: String,
@@ -79,16 +52,19 @@ const familySchema = new mongoose.Schema({
 familySchema.pre(/^find/, function (next) {
   this.select("-__v");
   this.populate({
-    path: "users",
+    path: "users shoppingList",
     select: "-__v -password -family",
   });
-  this.populate({
-    path: "groceries",
-    populate: {
-      path: "createdBy",
-      select: "-__v -password -family -photo -dateOfBirth -gender",
-    },
-  });
+  
+
+  // this.populate({
+  //   path: "groceries",
+  //   populate: {
+  //     path: "createdBy",
+  //     select:
+  //       "-__v -password -family -photo -user -dateOfBirth -gender -points",
+  //   },
+  // });
   next();
 });
 
