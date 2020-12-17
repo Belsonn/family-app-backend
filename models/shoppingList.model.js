@@ -9,11 +9,9 @@ const shoppingListSchema = new mongoose.Schema({
         //   name: String,
         //   icon: String
         // },
-        item: {
-          name: String,
-          quantity: Number,
-          details: String,
-        },
+        name: String,
+        quantity: Number,
+        details: String,
         createdBy: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "FamilyUser",

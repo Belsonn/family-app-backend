@@ -6,9 +6,11 @@ const router = express.Router();
 
 router.use(authController.protect);
 
-router.get("/list/", shoppingListController.getAllLists);
-router.get("/list/:id", shoppingListController.getList);
-router.post("/createList", shoppingListController.createList);
-router.post("/addGrocery", shoppingListController.addGrocery);
-router.patch("/editList", shoppingListController.updateList);
-router.patch("/deleteList", shoppingListController.deleteList);
+router.get("/", shoppingListController.getAllLists);
+router.get("/list/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.getList);
+router.post("/create", shoppingListController.createList);
+router.post("/add/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.addItemToList);
+router.patch("/edit/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.updateList);
+router.patch("/delete/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.deleteList);
+
+module.exports = router;

@@ -1,6 +1,30 @@
 const globalError = require("../utils/globalError");
 const Family = require("../models/family.model");
 const shoppingList = require("../models/shoppingList.model");
+const ShoppingList = require("../models/shoppingList.model");
+const mongoose = require('mongoose')
+
+exports.checkIfListExistsAndAllow = async (req, res, next) => {
+  let allow = false;
+
+  if(!mongoose.isValidObjectId(req.params.id)){
+    return next(new globalError("This is not valid ID", 400))
+  }
+
+  const list = await ShoppingList.findOne({ _id: req.params.id });
+
+  if (!list) {
+    return next(new globalError("This list does not exists", 404));
+  }
+  req.family.shoppingLists.forEach((el) => {
+    el._id == req.params.id ? (allow = true) : null;
+  });
+
+  if (!allow) {
+    return next(new globalError("You are not allowed to do that", 401));
+  }
+  next();
+};
 
 exports.getAllLists = async (req, res, next) => {
   const family = await Family.findById(req.family._id);
@@ -8,46 +32,33 @@ exports.getAllLists = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      groceries: family.groceries,
+      lists: family.shoppingLists,
     },
   });
 };
 
 exports.getList = async (req, res, next) => {
-  let id = req.params.id;
-
-  // const list = await Family.findOne({ _id: req.family._id }).select({
-  //   groceries: { $elemMatch: { _id: id } },
-  // })
-  // console.log(list);
-  //SAME
-  const list2 = await Family.findOne({'_id': req.family._id, 'groceries._id': id}, {"groceries.$": 1})
-
-  if (!list.groceries[0]) {
-    return next(new globalError("Theres no list with that id", 404));
-  }
-
-  const fixedList = list.groceries[0];
+  const list = await ShoppingList.findById(req.params.id);
 
   res.status(200).json({
     status: "success",
     data: {
-      list2
+      list,
     },
   });
 };
 
 exports.createList = async (req, res, next) => {
-  let list = {
+  const list = await ShoppingList.create({
     name: req.body.name,
     list: [],
     createdBy: req.familyUser._id,
-  };
+  });
 
-  let family = await Family.findByIdAndUpdate(
+  const family = await Family.findByIdAndUpdate(
     req.family._id,
     {
-      $push: { groceries: list },
+      $push: { shoppingLists: list._id },
     },
     { new: true }
   );
@@ -55,72 +66,64 @@ exports.createList = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      groceries: family.groceries,
+      lists: family.shoppingLists,
     },
   });
 };
 
-exports.addGrocery = async (req, res, next) => {
-  const grocery = {
-    item: req.body.item,
+exports.addItemToList = async (req, res, next) => {
+  const item = {
+    name: req.body.name,
+    quantity: req.body.quantity,
+    details: req.body.details,
     createdAt: Date.now(),
     createdBy: req.familyUser._id,
     completedAt: null,
   };
 
-  family = await Family.findOneAndUpdate(
-    { _id: req.family._id, groceries: { $elemMatch: { _id: req.body.id } } },
+  const shoppingList = await ShoppingList.findByIdAndUpdate(
+    req.params.id,
     {
-      $push: {
-        "groceries.$.list": grocery,
-      },
+      $push: { list: item },
     },
-    {
-      new: true,
-    }
-  );
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      groceries: family.groceries,
-    },
-  });
-};
-
-exports.updateList = async (req, res, next) => {
-  family = await Family.findOneAndUpdate(
-    { _id: req.family._id, groceries: { $elemMatch: { _id: req.body._id } } },
-    {
-      $set: {
-        "groceries.$.list": req.body.list,
-        "groceries.$.name": req.body.name,
-      },
-    },
-    {
-      new: true,
-    }
-  );
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      groceries: family.groceries,
-    },
-  });
-};
-
-exports.deleteList = async (req, res, next) => {
-  const family = await Family.findByIdAndUpdate(
-    req.family._id,
-    { $pull: { groceries: { _id: req.body.id } } },
     { new: true }
   );
 
   res.status(200).json({
     status: "success",
     data: {
-      groceries: family.groceries,
+      shoppingList,
+    },
+  });
+};
+
+exports.updateList = async (req, res, next) => {
+  const list = await ShoppingList.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      list
+    },
+  });
+};
+
+exports.deleteList = async (req, res, next) => {
+  const list = await ShoppingList.findByIdAndDelete(req.params.id);
+
+  const family = await Family.findByIdAndUpdate(
+    req.family._id,
+    { $pull: { shoppingLists: req.params.id } },
+    { new: true },
+    function (err, data) {}
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      shoppingLists: family.shoppingLists,
     },
   });
 };

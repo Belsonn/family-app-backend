@@ -52,10 +52,12 @@ const familySchema = new mongoose.Schema({
 familySchema.pre(/^find/, function (next) {
   this.select("-__v");
   this.populate({
-    path: "users shoppingList",
+    path: "users",
     select: "-__v -password -family",
   });
-  
+  this.populate({
+    path: "shoppingLists",
+  });
 
   // this.populate({
   //   path: "groceries",

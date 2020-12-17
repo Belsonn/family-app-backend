@@ -174,8 +174,9 @@ exports.protect = async (req, res, next) => {
       )
     );
   }
+  const family = await Family.findById(currentUser.family)
 
   req.familyUser = currentUser;
-  req.family = currentUser.family // ? ? ? 
+  req.family = family // ? ? ? 
   next();
 };
