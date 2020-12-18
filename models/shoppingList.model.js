@@ -25,6 +25,27 @@ const shoppingListSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FamilyUser",
   },
+  completedAt: {
+    type: Date,
+    default: null
+  }
+});
+
+shoppingListSchema.pre(/^find/, function (next) {
+  this.select("-__v");
+  this.populate({
+    path: "createdBy",
+    select: "-__v -password -family -points -gender -dateOfBirth",
+  });
+  this.populate({
+    path: "list",
+    populate: {
+      path: "createdBy",
+      select: "-__v -password -family -points -gender -dateOfBirth",
+    },
+  });
+
+  next();
 });
 
 const ShoppingList = mongoose.model("ShoppingList", shoppingListSchema);

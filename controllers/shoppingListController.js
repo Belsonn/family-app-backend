@@ -123,7 +123,7 @@ exports.deleteList = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      shoppingLists: family.shoppingLists,
+      lists: family.shoppingLists,
     },
   });
 };

@@ -11,6 +11,6 @@ router.get("/list/:id", shoppingListController.checkIfListExistsAndAllow, shoppi
 router.post("/create", shoppingListController.createList);
 router.post("/add/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.addItemToList);
 router.patch("/edit/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.updateList);
-router.patch("/delete/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.deleteList);
+router.delete("/delete/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.deleteList);
 
 module.exports = router;
