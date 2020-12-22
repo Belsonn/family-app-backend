@@ -25,6 +25,10 @@ const shoppingListSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FamilyUser",
   },
+  createdAt: {
+    type: Date,
+    default: new Date()
+  },
   completedAt: {
     type: Date,
     default: null
