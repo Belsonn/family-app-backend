@@ -38,6 +38,21 @@ const familySchema = new mongoose.Schema({
       },
     },
   ],
+  messages: [
+    {
+      date: {
+        type: Date,
+      },
+      message: {
+        type: String,
+        required: [true, "A message should have a text."],
+      },
+      createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "FamilyUser",
+      },
+    },
+  ],
   inviteToken: {
     type: String,
     uppercase: true,
@@ -58,6 +73,14 @@ familySchema.pre(/^find/, function (next) {
   this.populate({
     path: "shoppingLists",
   });
+
+  this.populate({
+    path:"messages",
+    populate: {
+      path: "createdBy",
+      select: "-__v -password -family",
+    }
+  })
 
   // this.populate({
   //   path: "groceries",

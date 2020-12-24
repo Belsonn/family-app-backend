@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const app = require("./app");
 const socket = require("socket.io");
+const chatController = require("./controllers/chatController");
 
 process.on("uncaughtException", (err) => {
   console.log("Shutting down...");
@@ -29,10 +30,21 @@ mongoose
 
 const port = process.env.PORT;
 
+app.use("/api/v1/chat/io", (req, res, next) => {
+  console.log("XD");
+  req.io = io;
+  next();
+});
+
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
-const io = socket(server);
+const io = socket(server, {
+  cors: {
+    origin: "*",
+  },
+});
+app.io = io;
 
 io.on("connection", (socket) => {
   console.log("Socket connected");
