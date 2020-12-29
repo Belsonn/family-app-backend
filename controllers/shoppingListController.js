@@ -2,13 +2,13 @@ const globalError = require("../utils/globalError");
 const Family = require("../models/family.model");
 const shoppingList = require("../models/shoppingList.model");
 const ShoppingList = require("../models/shoppingList.model");
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 exports.checkIfListExistsAndAllow = async (req, res, next) => {
   let allow = false;
 
-  if(!mongoose.isValidObjectId(req.params.id)){
-    return next(new globalError("This is not valid ID", 400))
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return next(new globalError("This is not valid ID", 400));
   }
 
   const list = await ShoppingList.findOne({ _id: req.params.id });
@@ -105,7 +105,7 @@ exports.updateList = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      list
+      list,
     },
   });
 };
@@ -124,6 +124,41 @@ exports.deleteList = async (req, res, next) => {
     status: "success",
     data: {
       lists: family.shoppingLists,
+    },
+  });
+};
+
+exports.tenLastProducts = async (req, res, next) => {
+  const family = await Family.findById(req.family._id);
+
+  const lists = family.shoppingLists;
+
+  let products = [];
+
+  // Get all products
+  lists.forEach((list) => {
+    products.push(...list.list);
+  });
+
+  // Remove duplicates
+  unique = [...new Map(products.map((el) => [el["name"], el])).values()];
+
+  // Sort by date
+  unique.sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+
+  // Keep only 10
+  howMuch = unique.length - 10;
+  unique.splice(9, howMuch);
+
+
+  res.status(200).json({
+    status: "success",
+    results: unique.length,
+    data: {
+      products: unique,
     },
   });
 };

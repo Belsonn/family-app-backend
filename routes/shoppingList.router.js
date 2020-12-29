@@ -7,6 +7,7 @@ const router = express.Router();
 router.use(authController.protect);
 
 router.get("/", shoppingListController.getAllLists);
+router.get("/lastTen", shoppingListController.tenLastProducts);
 router.get("/list/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.getList);
 router.post("/create", shoppingListController.createList);
 router.post("/add/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.addItemToList);
