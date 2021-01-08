@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const eventSchema = new mongoose.Schema({
   name: String,
   color: String,
+  type: {
+    type: String,
+    enum: ["event", "task"]
+  },
   startDate: Date,
   endDate: Date,
   allDay: Boolean,
