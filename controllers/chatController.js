@@ -2,7 +2,7 @@ const Family = require("./../models/family.model");
 const FamilyUser = require("./../models/familyuser.model");
 
 exports.getMessages = async (req, res, next) => {
-  const family = await Family.findById(req.family._id);
+  const family = await Family.findById(req.family._id).select("+messages");
 
   let messages = family.messages;
 
@@ -18,7 +18,7 @@ exports.getMessages = async (req, res, next) => {
 };
 
 exports.getMoreMessages = async (req, res, next) => {
-  const family = await Family.findById(req.family._id);
+  const family = await Family.findById(req.family._id).select("+messages");
 
   messagesLoaded = req.params.messages;
 
@@ -52,7 +52,7 @@ exports.getMoreMessages = async (req, res, next) => {
 };
 
 exports.getAllMessages = async (req, res, next) => {
-  const family = await Family.findById(req.family._id);
+  const family = await Family.findById(req.family._id).select("+messages");
 
   res.status(200).json({
     status: "success",

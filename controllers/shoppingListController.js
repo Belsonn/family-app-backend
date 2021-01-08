@@ -27,7 +27,7 @@ exports.checkIfListExistsAndAllow = async (req, res, next) => {
 };
 
 exports.getAllLists = async (req, res, next) => {
-  const family = await Family.findById(req.family._id);
+  const family = await Family.findById(req.family._id).select("+shoppingLists");
 
   res.status(200).json({
     status: "success",
@@ -61,7 +61,7 @@ exports.createList = async (req, res, next) => {
       $push: { shoppingLists: list._id },
     },
     { new: true }
-  );
+  ).select("+shoppingLists");
 
   res.status(200).json({
     status: "success",
@@ -118,7 +118,7 @@ exports.deleteList = async (req, res, next) => {
     { $pull: { shoppingLists: req.params.id } },
     { new: true },
     function (err, data) {}
-  );
+  ).select("+shoppingLists");
 
   res.status(200).json({
     status: "success",
@@ -129,7 +129,7 @@ exports.deleteList = async (req, res, next) => {
 };
 
 exports.tenLastProducts = async (req, res, next) => {
-  const family = await Family.findById(req.family._id);
+  const family = await Family.findById(req.family._id).select("+shoppingLists");
 
   const lists = family.shoppingLists;
 

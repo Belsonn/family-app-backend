@@ -115,7 +115,7 @@ exports.checkInviteCode = async (req, res, next) => {
 };
 
 exports.getFamily = async (req, res, next) => {
-  const family = await Family.findById(req.params.id);
+  const family = await Family.findById(req.params.id)
 
   if (!family) {
     return next(new globalError("There are no families with that ID", 404));
@@ -146,8 +146,8 @@ exports.getAllFamilies = async (req, res, next) => {
 };
 
 exports.getMeAndFamily = async (req, res, next) => {
-  const familyUser = await FamilyUser.findById(req.familyUser.id);
-  const family = await Family.findById(req.family);
+  const familyUser = await FamilyUser.findById(req.familyUser.id).select("-family");
+  const family = await Family.findById(req.family)
 
   if (!family || !familyUser) {
     return next(
@@ -164,59 +164,6 @@ exports.getMeAndFamily = async (req, res, next) => {
   });
 };
 
-exports.addEvent = async (req, res, next) => {
-  const event = {
-    name: req.body.name,
-    color: req.body.color,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    allDay: req.body.allDay,
-    repeat: null,
-  };
 
-  if (req.body.repeat) {
-    event.repeat = {
-      repeatType: req.body.repeat.repeatType,
-      repeatEvery: req.body.repeat.repeatEvery,
-    };
-  }
-
-  let family = await Family.findById(req.family._id);
-
-  if (!family) {
-    return next(new globalError("Wrong id provided", 400));
-  }
-
-  family = await Family.findByIdAndUpdate(
-    req.family._id,
-    {
-      $push: { events: event },
-    },
-    { new: true }
-  );
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      family,
-    },
-  });
-};
-
-exports.getEvents = async (req, res, next) => {
-  const family = await Family.findById(req.family._id);
-
-  if (!family) {
-    return next(new globalError("There is no familyID", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    results: family.events.length,
-    data: {
-      family,
-    },
-  });
-};
 
 
