@@ -15,9 +15,5 @@ router.get("/family/:id", familyController.getFamily);
 
 router.use(authController.protect);
 router.get("/myFamily", familyController.getMeAndFamily)
-router.post("/addEvent", familyController.addEvent);
-router.get("/events", familyController.getEvents);
-
-
 
 module.exports = router;

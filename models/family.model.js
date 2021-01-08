@@ -9,50 +9,43 @@ const familySchema = new mongoose.Schema({
       ref: "FamilyUser",
     },
   ],
-  shoppingLists: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ShoppingList",
-    },
-  ],
-  events: [
-    {
-      name: String,
-      color: String,
-      startDate: Date,
-      endDate: Date,
-      points: Number,
-      allDay: Boolean,
-      users: [
-        {
-          user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "FamilyUser",
-          },
-          completed: Boolean,
-        },
-      ],
-      repeat: {
-        repeatType: String,
-        repeatEvery: String,
-      },
-    },
-  ],
-  messages: [
-    {
-      date: {
-        type: Date,
-      },
-      message: {
-        type: String,
-        required: [true, "A message should have a text."],
-      },
-      createdBy: {
+  shoppingLists: {
+    type: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "FamilyUser",
+        ref: "ShoppingList",
       },
-    },
-  ],
+  
+    ],
+    select: false,
+  },
+  events: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event",
+      },
+    ],
+    select: false,
+  },
+  messages: {
+    type: [
+      {
+        date: {
+          type: Date,
+        },
+        message: {
+          type: String,
+          required: [true, "A message should have a text."],
+        },
+        createdBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "FamilyUser",
+        },
+      },
+    ],
+    select: false,
+  },
   inviteToken: {
     type: String,
     uppercase: true,
@@ -75,21 +68,16 @@ familySchema.pre(/^find/, function (next) {
   });
 
   this.populate({
-    path:"messages",
+    path: "messages",
     populate: {
       path: "createdBy",
       select: "-__v -password -family",
-    }
+    },
+  });
+  this.populate({
+    path:"events",
   })
 
-  // this.populate({
-  //   path: "groceries",
-  //   populate: {
-  //     path: "createdBy",
-  //     select:
-  //       "-__v -password -family -photo -user -dateOfBirth -gender -points",
-  //   },
-  // });
   next();
 });
 
