@@ -25,9 +25,6 @@ exports.addEvent = async (req, res, next) => {
 exports.getEvents = async (req, res, next) => {
   const family = await Family.findById(req.family._id).select("+events")
 
-  if (!family) {
-    return next(new globalError("There is no familyID", 404));
-  }
   let events = family.events;
 
   events.sort((a, b) => {

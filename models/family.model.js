@@ -15,7 +15,6 @@ const familySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "ShoppingList",
       },
-  
     ],
     select: false,
   },
@@ -42,6 +41,15 @@ const familySchema = new mongoose.Schema({
           type: mongoose.Schema.Types.ObjectId,
           ref: "FamilyUser",
         },
+      },
+    ],
+    select: false,
+  },
+  tasks: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Task",
       },
     ],
     select: false,
@@ -75,8 +83,11 @@ familySchema.pre(/^find/, function (next) {
     },
   });
   this.populate({
-    path:"events",
-  })
+    path: "events",
+  });
+  this.populate({
+    path: "tasks",
+  });
 
   next();
 });

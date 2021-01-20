@@ -7,6 +7,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     enum: ["event", "task"],
   },
+  points: Number,
   users:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: "FamilyUser",
