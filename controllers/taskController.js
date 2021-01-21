@@ -1,4 +1,3 @@
-const globalError = require("./../utils/globalError");
 const Task = require("./../models/task.model");
 const Family = require("./../models/family.model");
 

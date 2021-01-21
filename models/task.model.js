@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
   name: String,
-  //   color: String, ??
+  color: String,
   points: Number,
   users: [
     {
@@ -14,12 +14,18 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
       },
+      completedAt: {
+        type: Boolean,
+        default: null,
+      },
     },
   ],
   startDate: Date,
   endDate: Date,
-  allDay: Boolean,
-  common: Boolean,
+  dailyTask: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "DailyTask",
+  },
 });
 
 taskSchema.pre(/^find/, function (next) {
