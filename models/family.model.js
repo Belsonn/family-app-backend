@@ -54,6 +54,15 @@ const familySchema = new mongoose.Schema({
     ],
     select: false,
   },
+  dailyTasks: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "DailyTask",
+      },
+    ],
+    select: false,
+  },
   inviteToken: {
     type: String,
     uppercase: true,
@@ -87,6 +96,9 @@ familySchema.pre(/^find/, function (next) {
   });
   this.populate({
     path: "tasks",
+  });
+  this.populate({
+    path: "dailyTasks",
   });
 
   next();
