@@ -10,7 +10,7 @@ exports.addTask = async (req, res, next) => {
       $push: { tasks: task._id },
     },
     { new: true }
-  ).select("+tasks");
+  ).populate("tasks");
 
   res.status(200).json({
     status: "success",
@@ -22,7 +22,7 @@ exports.addTask = async (req, res, next) => {
 };
 
 exports.getTasks = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).select("+tasks");
+  const family = await Family.findById(req.family._id).populate("tasks");
 
   let tasks = family.tasks;
 

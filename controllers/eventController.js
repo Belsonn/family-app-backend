@@ -12,7 +12,7 @@ exports.addEvent = async (req, res, next) => {
       $push: { events: event._id },
     },
     { new: true }
-  ).select("+events")
+  ).populate("events")
 
   res.status(200).json({
     status: "success",
@@ -23,7 +23,7 @@ exports.addEvent = async (req, res, next) => {
 };
 
 exports.getEvents = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).select("+events")
+  const family = await Family.findById(req.family._id).populate("events")
 
   let events = family.events;
 

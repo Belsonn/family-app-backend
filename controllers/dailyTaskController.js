@@ -10,7 +10,7 @@ exports.createDailyTask = async (req, res, next) => {
       $push: { dailyTasks: dailyTask._id },
     },
     { new: true }
-  ).select("+dailyTasks");
+  ).populate("dailyTasks");
 
   res.status(200).json({
     status: "success",
@@ -22,7 +22,7 @@ exports.createDailyTask = async (req, res, next) => {
 };
 
 exports.getDailyTasks = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).select("+dailyTasks");
+  const family = await Family.findById(req.family._id).populate("dailyTasks");
 
   let dailyTasks = family.dailyTasks;
 
@@ -33,4 +33,16 @@ exports.getDailyTasks = async (req, res, next) => {
       dailyTasks,
     },
   });
+};
+
+exports.taskOnDate = async (req, res, next) => {
+
+  const family = await Family.findById(req.family._id).populate("tasks");
+
+  res.status(200).json({
+    data: {
+      family
+    }
+  })
+
 };

@@ -2,7 +2,10 @@ const Family = require("./../models/family.model");
 const FamilyUser = require("./../models/familyuser.model");
 
 exports.getMessages = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).select("+messages");
+  const family = await Family.findById(req.family._id).populate({
+    path: "messages",
+    populate: { path: "createdBy", select: "-__v -password -family" },
+  });
 
   let messages = family.messages;
 
@@ -18,7 +21,10 @@ exports.getMessages = async (req, res, next) => {
 };
 
 exports.getMoreMessages = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).select("+messages");
+  const family = await Family.findById(req.family._id).populate({
+    path: "messages",
+    populate: { path: "createdBy", select: "-__v -password -family" },
+  });
 
   messagesLoaded = req.params.messages;
 
@@ -34,12 +40,11 @@ exports.getMoreMessages = async (req, res, next) => {
 
     messages.splice(0, messages.length - 20 - messagesLoaded);
 
-    if(messages.length - messagesLoaded < 20){
-      messages.splice(messages.length - messagesLoaded, messagesLoaded)
+    if (messages.length - messagesLoaded < 20) {
+      messages.splice(messages.length - messagesLoaded, messagesLoaded);
     } else {
       messages.splice(20, messagesLoaded);
     }
-
 
     res.status(200).json({
       status: "success",
@@ -52,7 +57,10 @@ exports.getMoreMessages = async (req, res, next) => {
 };
 
 exports.getAllMessages = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).select("+messages");
+  const family = await Family.findById(req.family._id).populate({
+    path: "messages",
+    populate: { path: "createdBy", select: "-__v -password -family" },
+  });
 
   res.status(200).json({
     status: "success",

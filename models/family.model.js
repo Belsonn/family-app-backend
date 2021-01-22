@@ -80,26 +80,7 @@ familySchema.pre(/^find/, function (next) {
     path: "users",
     select: "-__v -password -family",
   });
-  this.populate({
-    path: "shoppingLists",
-  });
 
-  this.populate({
-    path: "messages",
-    populate: {
-      path: "createdBy",
-      select: "-__v -password -family",
-    },
-  });
-  this.populate({
-    path: "events",
-  });
-  this.populate({
-    path: "tasks",
-  });
-  this.populate({
-    path: "dailyTasks",
-  });
 
   next();
 });
