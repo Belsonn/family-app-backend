@@ -36,13 +36,34 @@ exports.getDailyTasks = async (req, res, next) => {
 };
 
 exports.taskOnDate = async (req, res, next) => {
+  const date = new Date(req.query.date);
+
+  console.log(date);
 
   const family = await Family.findById(req.family._id).populate("tasks");
 
+  let allTasks = family.tasks;
+
+  let tasks = [];
+
+  allTasks.forEach((el) => {
+    let dateLocal = new Date(el.startDate);
+
+    if (
+      el.dailyTask &&
+      date.getDate() === dateLocal.getDate() &&
+      date.getMonth() === dateLocal.getMonth() &&
+      date.getFullYear() === dateLocal.getFullYear()
+    ) {
+      tasks.push(el);
+    }
+  });
+
   res.status(200).json({
     data: {
-      family
-    }
-  })
-
+      tasks,
+    },
+  });
 };
+
+exports.createMultipleTask = async (req, res, next) => {};
