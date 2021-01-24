@@ -86,6 +86,7 @@ exports.updateDailyTask = async (req, res, next) => {
 
   const newTasks = req.body.tasks;
 
+
   // delete tasks on date
 
   let family = await Family.findById(req.family._id).populate("tasks");
@@ -122,19 +123,24 @@ exports.updateDailyTask = async (req, res, next) => {
   // add new tasks
 
   newTasks.forEach(async (task) => {
-    const newTask = await Task.create(task);
 
-    family = await Family.findByIdAndUpdate(
-      req.family._id,
-      { $push: { tasks: newTask._id } },
-      { new: true }
-    );
+    if(!task.users.length < 1){
+      const newTask = await Task.create(task);
+  
+      family = await Family.findByIdAndUpdate(
+        req.family._id,
+        { $push: { tasks: newTask._id } },
+        { new: true }
+      );
+    }
   });
+
+  family = await Family.findById(req.family._id).populate("tasks");
 
   res.status(200).json({
     status: "success",
     data: {
-      tasks: newTasks,
+      tasks: family.tasks
     },
   });
 };

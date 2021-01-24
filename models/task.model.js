@@ -18,6 +18,10 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: null,
       },
+      abandoned:{
+        type: Boolean,
+        default: false
+      }
     },
   ],
   startDate: Date,
