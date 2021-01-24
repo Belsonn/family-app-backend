@@ -10,6 +10,7 @@ router.post("/addTask", taskController.addTask);
 router.get("/", taskController.getTasks);
 
 router.post("/addDailyTask", dailyTaskController.createDailyTask);
+router.post("/updateDailyTasks", dailyTaskController.updateDailyTask);
 router.get("/dailyWithTask", dailyTaskController.taskOnDate);
 router.get("/daily", dailyTaskController.getDailyTasks);
 
