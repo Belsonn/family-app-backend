@@ -30,12 +30,6 @@ mongoose
 
 const port = process.env.PORT;
 
-app.use("/api/v1/chat/io", (req, res, next) => {
-  console.log("XD");
-  req.io = io;
-  next();
-});
-
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });

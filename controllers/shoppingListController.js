@@ -11,14 +11,21 @@ exports.checkIfListExistsAndAllow = async (req, res, next) => {
     return next(new globalError("This is not valid ID", 400));
   }
 
-  const list = await ShoppingList.findOne({ _id: req.params.id });
+  const list = await ShoppingList.findOne({ _id: req.params.id }).populate(
+    "shoppingLists"
+  );
+
+  const family = await Family.findById(req.family._id).populate(
+    "shoppingLists"
+  );
 
   if (!list) {
     return next(new globalError("This list does not exists", 404));
   }
-  req.family.shoppingLists.forEach((el) => {
+  family.shoppingLists.forEach((el) => {
     el._id == req.params.id ? (allow = true) : null;
   });
+
 
   if (!allow) {
     return next(new globalError("You are not allowed to do that", 401));
@@ -27,7 +34,9 @@ exports.checkIfListExistsAndAllow = async (req, res, next) => {
 };
 
 exports.getAllLists = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).populate("shoppingLists");
+  const family = await Family.findById(req.family._id).populate(
+    "shoppingLists"
+  );
 
   res.status(200).json({
     status: "success",
@@ -116,8 +125,7 @@ exports.deleteList = async (req, res, next) => {
   const family = await Family.findByIdAndUpdate(
     req.family._id,
     { $pull: { shoppingLists: req.params.id } },
-    { new: true },
-    function (err, data) {}
+    { new: true }
   ).populate("shoppingLists");
 
   res.status(200).json({
@@ -129,7 +137,9 @@ exports.deleteList = async (req, res, next) => {
 };
 
 exports.tenLastProducts = async (req, res, next) => {
-  const family = await Family.findById(req.family._id).populate("shoppingLists");
+  const family = await Family.findById(req.family._id).populate(
+    "shoppingLists"
+  );
 
   const lists = family.shoppingLists;
 
@@ -148,11 +158,9 @@ exports.tenLastProducts = async (req, res, next) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
-
   // Keep only 10
   howMuch = unique.length - 10;
   unique.splice(9, howMuch);
-
 
   res.status(200).json({
     status: "success",
