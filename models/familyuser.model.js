@@ -17,16 +17,19 @@ const familyUserSchema = new mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
   },
   password: {
     type: String,
     minlength: 6,
-    select: false
+    select: false,
   },
   dateOfBirth: Date,
   photo: String,
-  points: Number,
+  points: {
+    type: Number,
+    default: 0,
+  },
 });
 familyUserSchema.pre(/^find/, function (next) {
   this.select("-__v");
@@ -51,9 +54,6 @@ familyUserSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
-
-
-
 
 const FamilyUser = mongoose.model("FamilyUser", familyUserSchema);
 

@@ -7,11 +7,14 @@ const router = express.Router();
 router.use(authController.protect);
 
 router.post("/addTask", taskController.addTask);
-router.get("/", taskController.getTasks);
+router.patch("/setTaskStatus", taskController.setTaskStatus);
 
 router.post("/addDailyTask", dailyTaskController.createDailyTask);
 router.post("/updateDailyTasks", dailyTaskController.updateDailyTask);
 router.get("/dailyWithTask", dailyTaskController.taskOnDate);
 router.get("/daily", dailyTaskController.getDailyTasks);
+
+
+router.get("/", taskController.getTasks);
 
 module.exports = router;

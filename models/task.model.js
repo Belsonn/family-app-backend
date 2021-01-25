@@ -15,7 +15,7 @@ const taskSchema = new mongoose.Schema({
         default: false,
       },
       completedAt: {
-        type: Boolean,
+        type: Date,
         default: null,
       },
       abandoned:{
