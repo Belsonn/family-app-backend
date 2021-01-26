@@ -6,6 +6,10 @@ const globalError = require("./../utils/globalError");
 exports.createDailyTask = async (req, res, next) => {
   const dailyTask = await DailyTask.create(req.body);
 
+  if(!req.body){
+    return next(new globalError("No dailyTask send to server.", 400))
+  }
+
   const family = await Family.findByIdAndUpdate(
     req.family._id,
     {
