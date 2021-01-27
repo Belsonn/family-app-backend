@@ -6,6 +6,16 @@ const router = express.Router();
 
 router.use(authController.protect);
 
+router.get(
+  "/task/:id",
+  taskController.checkIfTaskExistsAndAllow,
+  taskController.getSingleTask
+);
+router.patch(
+  "/task/:id",
+  taskController.checkIfTaskExistsAndAllow,
+  taskController.editSingleTask
+);
 router.post("/addTask", taskController.addTask);
 router.patch("/setTaskStatus", taskController.setTaskStatus);
 

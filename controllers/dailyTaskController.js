@@ -53,9 +53,6 @@ exports.checkIfDailyTaskExistsAndAllow = async (req, res, next) => {
 };
 
 exports.getSingleDailyTask = async (req, res, next) => {
-  if (!req.params.id) {
-    return next(new globalError("No id provided.", 404));
-  }
 
   const dailyTask = await DailyTask.findById(req.params.id);
 
