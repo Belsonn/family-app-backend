@@ -12,8 +12,17 @@ router.patch("/setTaskStatus", taskController.setTaskStatus);
 router.post("/addDailyTask", dailyTaskController.createDailyTask);
 router.post("/updateDailyTasks", dailyTaskController.updateDailyTask);
 router.get("/dailyWithTask", dailyTaskController.taskOnDate);
+router.get(
+  "/daily/:id",
+  dailyTaskController.checkIfDailyTaskExistsAndAllow,
+  dailyTaskController.getSingleDailyTask
+);
+router.patch(
+  "/daily/:id",
+  dailyTaskController.checkIfDailyTaskExistsAndAllow,
+  dailyTaskController.editDailyTaskData
+);
 router.get("/daily", dailyTaskController.getDailyTasks);
-
 
 router.get("/", taskController.getTasks);
 

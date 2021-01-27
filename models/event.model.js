@@ -2,16 +2,6 @@ const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema({
   name: String,
-  color: String,
-  eventType: {
-    type: String,
-    enum: ["event", "task"],
-  },
-  points: Number,
-  users:[{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "FamilyUser",
-  }],
   startDate: Date,
   endDate: Date,
   allDay: Boolean,

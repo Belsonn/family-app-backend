@@ -2,12 +2,13 @@ const DailyTask = require("./../models/dailyTask.model");
 const Family = require("./../models/family.model");
 const Task = require("./../models/task.model");
 const globalError = require("./../utils/globalError");
+const mongoose = require("mongoose");
 
 exports.createDailyTask = async (req, res, next) => {
   const dailyTask = await DailyTask.create(req.body);
 
-  if(!req.body){
-    return next(new globalError("No dailyTask send to server.", 400))
+  if (!req.body) {
+    return next(new globalError("No dailyTask send to server.", 400));
   }
 
   const family = await Family.findByIdAndUpdate(
@@ -27,16 +28,67 @@ exports.createDailyTask = async (req, res, next) => {
   });
 };
 
+exports.checkIfDailyTaskExistsAndAllow = async (req, res, next) => {
+  let allow = false;
+
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return next(new globalError("This is not valid ID", 400));
+  }
+
+  const list = await DailyTask.findOne({ _id: req.params.id });
+
+  const family = await Family.findById(req.family._id).populate("dailyTasks");
+
+  if (!list) {
+    return next(new globalError("This list does not exists", 404));
+  }
+  family.dailyTasks.forEach((el) => {
+    el._id == req.params.id ? (allow = true) : null;
+  });
+
+  if (!allow) {
+    return next(new globalError("You are not allowed to do that", 401));
+  }
+  next();
+};
+
+exports.getSingleDailyTask = async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new globalError("No id provided.", 404));
+  }
+
+  const dailyTask = await DailyTask.findById(req.params.id);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      dailyTask,
+    },
+  });
+};
+
 exports.getDailyTasks = async (req, res, next) => {
   const family = await Family.findById(req.family._id).populate("dailyTasks");
 
   let dailyTasks = family.dailyTasks;
 
+  
+  // Sorting by date
+
   dailyTasks.sort((a, b) => {
-    if(parseInt(a.startTime.split(":")[0]) !== parseInt(b.startTime.split(":")[0])){
-      return parseInt(a.startTime.split(":")[0]) - parseInt(b.startTime.split(":")[0]);
+    if (
+      parseInt(a.startTime.split(":")[0]) !==
+      parseInt(b.startTime.split(":")[0])
+    ) {
+      return (
+        parseInt(a.startTime.split(":")[0]) -
+        parseInt(b.startTime.split(":")[0])
+      );
     } else {
-      return parseInt(a.startTime.split(":")[1]) - parseInt(b.startTime.split(":")[1]);
+      return (
+        parseInt(a.startTime.split(":")[1]) -
+        parseInt(b.startTime.split(":")[1])
+      );
     }
   });
 
@@ -78,6 +130,52 @@ exports.taskOnDate = async (req, res, next) => {
   });
 };
 
+exports.editDailyTaskData = async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new globalError("No id provided", 400));
+  }
+
+  const dailyTask = await DailyTask.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+
+
+  // Update all tasks made with this daily task
+
+  const tasks = await Task.find({ dailyTask: dailyTask.id });
+
+  let task;
+
+  for (let i = 0; i < tasks.length; i++) {
+    let startHours = dailyTask.startTime.split(":");
+    let endHours = dailyTask.endTime.split(":");
+
+    task = await Task.findByIdAndUpdate(
+      tasks[i].id,
+      {
+        name: dailyTask.name,
+        points: dailyTask.points,
+        startDate: new Date(tasks[i].startDate).setHours(
+          startHours[0],
+          startHours[1]
+        ),
+        endDate: new Date(tasks[i].startDate).setHours(
+          endHours[0],
+          endHours[1]
+        ),
+      },
+      { new: true }
+    );
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      dailyTask,
+    },
+  });
+};
+
 exports.updateDailyTask = async (req, res, next) => {
   if (!req.query.date) {
     return next(new globalError("No date provided", 400));
@@ -89,7 +187,6 @@ exports.updateDailyTask = async (req, res, next) => {
   const date = new Date(req.query.date);
 
   const newTasks = req.body.tasks;
-
 
   // delete tasks on date
 
@@ -127,10 +224,9 @@ exports.updateDailyTask = async (req, res, next) => {
   // add new tasks
 
   newTasks.forEach(async (task) => {
-
-    if(!task.users.length < 1){
+    if (!task.users.length < 1) {
       const newTask = await Task.create(task);
-  
+
       family = await Family.findByIdAndUpdate(
         req.family._id,
         { $push: { tasks: newTask._id } },
@@ -144,7 +240,7 @@ exports.updateDailyTask = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      tasks: family.tasks
+      tasks: family.tasks,
     },
   });
 };
