@@ -63,6 +63,15 @@ const familySchema = new mongoose.Schema({
     ],
     select: false,
   },
+  rewards: {
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Reward",
+      },
+    ],
+    select: false,
+  },
   inviteToken: {
     type: String,
     uppercase: true,
@@ -80,7 +89,6 @@ familySchema.pre(/^find/, function (next) {
     path: "users",
     select: "-__v -password -family",
   });
-
 
   next();
 });
