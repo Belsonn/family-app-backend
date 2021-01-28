@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const dailyTaskSchema = new mongoose.Schema({
   name: String,
-  color: String,
   points: Number,
   startTime: String,
   endTime: String,
