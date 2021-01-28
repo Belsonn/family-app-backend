@@ -117,3 +117,16 @@ exports.editSingleTask = async (req, res, next) => {
     },
   });
 };
+
+exports.deleteTask = async (req, res, next) => {
+  const task = await Task.findByIdAndDelete(req.params.id);
+
+  const family = await Family.findByIdAndUpdate(req.family._id, {
+    $pull: { tasks: req.params.id },
+  });
+
+  res.status(204).json({
+    status: "success",
+    data: null
+  })
+};

@@ -6,16 +6,15 @@ const router = express.Router();
 
 router.use(authController.protect);
 
-router.get(
-  "/task/:id",
-  taskController.checkIfTaskExistsAndAllow,
-  taskController.getSingleTask
-);
-router.patch(
-  "/task/:id",
-  taskController.checkIfTaskExistsAndAllow,
-  taskController.editSingleTask
-);
+router
+  .route("/task/:id")
+  .get(taskController.checkIfTaskExistsAndAllow, taskController.getSingleTask)
+  .patch(
+    taskController.checkIfTaskExistsAndAllow,
+    taskController.editSingleTask
+  )
+  .delete(taskController.checkIfTaskExistsAndAllow, taskController.deleteTask);
+
 router.post("/addTask", taskController.addTask);
 router.patch("/setTaskStatus", taskController.setTaskStatus);
 
@@ -24,21 +23,21 @@ router.patch("/setTaskStatus", taskController.setTaskStatus);
 router.post("/addDailyTask", dailyTaskController.createDailyTask);
 router.post("/updateDailyTasks", dailyTaskController.updateDailyTask);
 router.get("/dailyWithTask", dailyTaskController.taskOnDate);
-router.get(
-  "/daily/:id",
-  dailyTaskController.checkIfDailyTaskExistsAndAllow,
-  dailyTaskController.getSingleDailyTask
-);
-router.patch(
-  "/daily/:id",
-  dailyTaskController.checkIfDailyTaskExistsAndAllow,
-  dailyTaskController.editDailyTaskData
-);
-router.delete(
-  "/daily/:id",
-  dailyTaskController.checkIfDailyTaskExistsAndAllow,
-  dailyTaskController.deleteDailyTask
-);
+
+router
+  .route("/daily/:id")
+  .get(
+    dailyTaskController.checkIfDailyTaskExistsAndAllow,
+    dailyTaskController.getSingleDailyTask
+  )
+  .patch(
+    dailyTaskController.checkIfDailyTaskExistsAndAllow,
+    dailyTaskController.editDailyTaskData
+  )
+  .delete(
+    dailyTaskController.checkIfDailyTaskExistsAndAllow,
+    dailyTaskController.deleteDailyTask
+  );
 router.get("/daily", dailyTaskController.getDailyTasks);
 
 router.get("/", taskController.getTasks);
