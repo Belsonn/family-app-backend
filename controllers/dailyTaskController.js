@@ -53,7 +53,6 @@ exports.checkIfDailyTaskExistsAndAllow = async (req, res, next) => {
 };
 
 exports.getSingleDailyTask = async (req, res, next) => {
-
   const dailyTask = await DailyTask.findById(req.params.id);
 
   res.status(200).json({
@@ -69,7 +68,6 @@ exports.getDailyTasks = async (req, res, next) => {
 
   let dailyTasks = family.dailyTasks;
 
-  
   // Sorting by date
 
   dailyTasks.sort((a, b) => {
@@ -135,7 +133,6 @@ exports.editDailyTaskData = async (req, res, next) => {
   const dailyTask = await DailyTask.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
-
 
   // Update all tasks made with this daily task
 
@@ -240,4 +237,28 @@ exports.updateDailyTask = async (req, res, next) => {
       tasks: family.tasks,
     },
   });
+};
+
+exports.deleteDailyTask = async (req, res, next) => {
+  const id = req.params.id;
+
+  const tasks = await Task.find({ dailyTask: id });
+
+  for (let i = 0; i < tasks.length; i++) {
+    let task = await Task.findByIdAndDelete(tasks[i]._id);
+    let family = await Family.findByIdAndUpdate(req.family._id, {
+      $pull: { tasks: tasks[i]._id },
+    });
+  }
+
+  const dailyTask = await DailyTask.findByIdAndDelete(id);
+
+  let family = await Family.findByIdAndUpdate(req.family._id, {
+    $pull: { dailyTasks: id },
+  });
+
+  res.status(204).json({
+    status: "success",
+    data: null
+  })
 };
