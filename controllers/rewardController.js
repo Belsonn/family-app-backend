@@ -69,10 +69,13 @@ exports.getRewardsUnlocked = async (req, res, next) => {
   const allRewards = family.rewards;
 
   let rewardsUnlocked = [];
+  let rewardsUnlockedAndConfirmed = [];
 
   if (allRewards) {
     for (let i = 0; i < allRewards.length; i++) {
-      if (allRewards[i].unlockedBy) {
+      if (allRewards[i].unlockedBy && allRewards[i].confirmed) {
+        rewardsUnlockedAndConfirmed.push(allRewards[i]);
+      } else if (allRewards[i].unlockedBy) {
         rewardsUnlocked.push(allRewards[i]);
       }
     }
@@ -81,7 +84,8 @@ exports.getRewardsUnlocked = async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: {
-      rewards: rewardsUnlocked,
+      rewardsUnlocked: rewardsUnlocked,
+      rewardsConfirmed: rewardsUnlockedAndConfirmed,
     },
   });
 };
@@ -114,16 +118,18 @@ exports.updateReward = async (req, res, next) => {
   });
 };
 
-exports.unlockReward = async (req,res, next) => {
+exports.unlockReward = async (req, res, next) => {
   const reward = await Reward.create(req.body);
 
   const family = await Family.findByIdAndUpdate(req.family._id, {
     $push: { rewards: reward._id },
   });
-  
-  let familyUser = await FamilyUser.findById(req.familyUser._id)
 
-  familyUser = await FamilyUser.findByIdAndUpdate(req.familyUser._id, {points : familyUser.points - reward.points})
+  let familyUser = await FamilyUser.findById(req.familyUser._id);
+
+  familyUser = await FamilyUser.findByIdAndUpdate(req.familyUser._id, {
+    points: familyUser.points - reward.points,
+  });
 
   res.status(200).json({
     status: "success",
@@ -131,4 +137,4 @@ exports.unlockReward = async (req,res, next) => {
       reward,
     },
   });
-}
+};
