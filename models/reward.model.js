@@ -9,7 +9,8 @@ const rewardSchema = new mongoose.Schema({
   },
   unlockedAt: {
     type: Date,
-  }
+  },
+  confirmed : Boolean
 });
 
 rewardSchema.pre(/^find/, function (next) {
