@@ -138,3 +138,33 @@ exports.unlockReward = async (req, res, next) => {
     },
   });
 };
+
+exports.getMyRewards = async (req, res, next) => {
+  let rewards = await Reward.find({
+    unlockedBy: { _id: req.familyUser._id },
+  });
+
+  let rewardsPending = [];
+  let rewardsApproved = [];
+
+  if (rewards.length > 0) {
+    for (let i = 0; i < rewards.length; i++) {
+      if (rewards[i].confirmed) {
+        rewardsApproved.push(rewards[i]);
+      } else {
+        rewardsPending.push(rewards[i]);
+      }
+    }
+    rewardsApproved.sort((a, b) => b.unlockedAt - a.unlockedAt);
+    rewardsPending.sort((a, b) => b.unlockedAt - a.unlockedAt);
+
+    rewards = [...rewardsPending, ...rewardsApproved];
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      rewards,
+    },
+  });
+};

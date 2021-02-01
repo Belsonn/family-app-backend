@@ -15,6 +15,7 @@ router
 
 router.get("/basic", rewardController.getRewardsBasic);
 router.get("/unlocked", rewardController.getRewardsUnlocked);
+router.get("/my", rewardController.getMyRewards);
 router.post("/createReward", rewardController.createReward);
 router.post("/unlock", rewardController.unlockReward);
 
