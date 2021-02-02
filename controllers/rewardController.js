@@ -168,3 +168,18 @@ exports.getMyRewards = async (req, res, next) => {
     },
   });
 };
+
+exports.deleteReward = async (req, res, next) => {
+  const id = req.params.id;
+
+  const reward = await Reward.findByIdAndDelete(id);
+
+  const family = await Family.findByIdAndUpdate(req.family._id, {
+    $pull: { rewards: id },
+  });
+
+  res.status(204).json({
+    status: "success",
+    data: {},
+  });
+};

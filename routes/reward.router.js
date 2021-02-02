@@ -11,6 +11,10 @@ router
   .patch(
     rewardController.checkIfRewardExistsAndAllow,
     rewardController.updateReward
+  )
+  .delete(
+    rewardController.checkIfRewardExistsAndAllow,
+    rewardController.deleteReward
   );
 
 router.get("/basic", rewardController.getRewardsBasic);
