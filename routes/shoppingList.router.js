@@ -8,10 +8,18 @@ router.use(authController.protect);
 
 router.get("/", shoppingListController.getAllLists);
 router.get("/lastTen", shoppingListController.tenLastProducts);
-router.get("/list/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.getList);
+router
+  .route("/list/:id")
+  .all(shoppingListController.checkIfListExistsAndAllow)
+  .get(shoppingListController.getList)
+  .patch(shoppingListController.updateList)
+  .delete(shoppingListController.deleteList);
 router.post("/create", shoppingListController.createList);
-router.post("/add/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.addItemToList);
-router.patch("/edit/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.updateList);
-router.delete("/delete/:id", shoppingListController.checkIfListExistsAndAllow, shoppingListController.deleteList);
+router.post(
+  "/add/:id",
+  shoppingListController.checkIfListExistsAndAllow,
+  shoppingListController.addItemToList
+);
+
 
 module.exports = router;
