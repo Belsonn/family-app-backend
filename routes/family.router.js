@@ -15,5 +15,6 @@ router.get("/family/:id", familyController.getFamily);
 
 router.use(authController.protect);
 router.get("/myFamily", familyController.getMeAndFamily)
+router.get("/settings", familyController.getSettings)
 
 module.exports = router;

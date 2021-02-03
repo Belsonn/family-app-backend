@@ -35,7 +35,7 @@ familyUserSchema.pre(/^find/, function (next) {
   this.select("-__v");
   this.populate({
     path: "family",
-    select: "-__v -users -createdAt -createdBy -events",
+    select: "-__v -users -createdAt -createdBy -events -settings",
   });
   next();
 });

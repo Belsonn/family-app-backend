@@ -115,7 +115,7 @@ exports.checkInviteCode = async (req, res, next) => {
 };
 
 exports.getFamily = async (req, res, next) => {
-  const family = await Family.findById(req.params.id)
+  const family = await Family.findById(req.params.id);
 
   if (!family) {
     return next(new globalError("There are no families with that ID", 404));
@@ -146,8 +146,10 @@ exports.getAllFamilies = async (req, res, next) => {
 };
 
 exports.getMeAndFamily = async (req, res, next) => {
-  const familyUser = await FamilyUser.findById(req.familyUser.id).select("-family");
-  const family = await Family.findById(req.family)
+  const familyUser = await FamilyUser.findById(req.familyUser.id).select(
+    "-family"
+  );
+  const family = await Family.findById(req.family);
 
   if (!family || !familyUser) {
     return next(
@@ -164,6 +166,13 @@ exports.getMeAndFamily = async (req, res, next) => {
   });
 };
 
+exports.getSettings = async (req, res, next) => {
+  const family = await Family.findById(req.family._id);
 
-
-
+  res.status(200).json({
+    status: "success",
+    data: {
+      settings: family.settings,
+    },
+  });
+};

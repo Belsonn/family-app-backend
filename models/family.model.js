@@ -81,6 +81,44 @@ const familySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "FamilyUser",
   },
+  settings: {
+    calendar: {
+      childCanCreateEvents: {
+        type: Boolean,
+        default: false,
+      },
+      childCanEditEvents: {
+        type: Boolean,
+        default: false,
+      },
+      childCanDeleteEvents: {
+        type: Boolean,
+        default: false,
+      },
+    },
+    shoppingLists: {
+      childCanCreateList: {
+        type: Boolean,
+        default: true,
+      },
+      childCanEditList: {
+        type: Boolean,
+        default: true,
+      },
+      childCanDeleteList: {
+        type: Boolean,
+        default: true,
+      },
+      childCanAddItemToList: {
+        type: Boolean,
+        default: true,
+      },
+      childCanEditItemOnList: {
+        type: Boolean,
+        default: true,
+      },
+    },
+  },
 });
 
 familySchema.pre(/^find/, function (next) {
