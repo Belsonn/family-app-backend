@@ -4,9 +4,6 @@ const eventSchema = new mongoose.Schema({
   name: String,
   startDate: Date,
   endDate: Date,
-  allDay: Boolean,
-  repeatType: String,
-  repeatEvery: Number,
 });
 
 eventSchema.pre(/^find/, function (next) {
