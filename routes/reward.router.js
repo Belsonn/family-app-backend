@@ -7,15 +7,10 @@ router.use(authController.protect);
 
 router
   .route("/reward/:id")
-  .get(rewardController.checkIfRewardExistsAndAllow, rewardController.getReward)
-  .patch(
-    rewardController.checkIfRewardExistsAndAllow,
-    rewardController.updateReward
-  )
-  .delete(
-    rewardController.checkIfRewardExistsAndAllow,
-    rewardController.deleteReward
-  );
+  .all(rewardController.checkIfRewardExistsAndAllow)
+  .get(rewardController.getReward)
+  .patch(rewardController.updateReward)
+  .delete(rewardController.deleteReward);
 
 router.get("/basic", rewardController.getRewardsBasic);
 router.get("/unlocked", rewardController.getRewardsUnlocked);
