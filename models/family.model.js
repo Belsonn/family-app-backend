@@ -85,15 +85,15 @@ const familySchema = new mongoose.Schema({
     calendar: {
       childCanCreateEvents: {
         type: Boolean,
-        default: false,
+        default: true,
       },
       childCanEditEvents: {
         type: Boolean,
-        default: false,
+        default: true,
       },
       childCanDeleteEvents: {
         type: Boolean,
-        default: false,
+        default: true,
       },
     },
     shoppingLists: {
@@ -106,6 +106,10 @@ const familySchema = new mongoose.Schema({
         default: true,
       },
       childCanDeleteList: {
+        type: Boolean,
+        default: true,
+      },
+      childCanCompleteList: {
         type: Boolean,
         default: true,
       },

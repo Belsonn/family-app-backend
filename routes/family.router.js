@@ -14,7 +14,10 @@ router.get("/code/:code", familyController.checkInviteCode);
 router.get("/family/:id", familyController.getFamily);
 
 router.use(authController.protect);
-router.get("/myFamily", familyController.getMeAndFamily)
-router.get("/settings", familyController.getSettings)
+router.get("/myFamily", familyController.getMeAndFamily);
+router
+  .route("/settings")
+  .get(familyController.getSettings)
+  .patch(familyController.updateSettings);
 
 module.exports = router;

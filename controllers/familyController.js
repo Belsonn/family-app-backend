@@ -176,3 +176,18 @@ exports.getSettings = async (req, res, next) => {
     },
   });
 };
+
+exports.updateSettings = async (req, res, next) => {
+  const family = await Family.findByIdAndUpdate(
+    req.family._id,
+    { settings: req.body },
+    { new: true }
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      settings: family.settings
+    }
+  })
+};
