@@ -1,9 +1,7 @@
-const User = require("./../models/user.model");
 const jwt_simple = require("jwt-simple");
 const globalError = require("./../utils/globalError");
 const FamilyUser = require("./../models/familyuser.model");
 const Family = require("./../models/family.model");
-// const Email = require("./../utils/email");
 
 const signToken = (id) => {
   return jwt_simple.encode(
@@ -40,65 +38,37 @@ exports.createSendToken = (familyUser, statusCode, res) => {
   });
 };
 
-exports.signup = async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (user) {
-    return next(
-      new globalError("User with this email or name already exists.", 400)
-    );
-  }
-  const newUser = await User.create(req.body);
+// exports.signup = async (req, res, next) => {
+//   const user = await User.findOne({ email: req.body.email });
+//   if (user) {
+//     return next(
+//       new globalError("User with this email or name already exists.", 400)
+//     );
+//   }
+//   const newUser = await User.create(req.body);
 
-  // const activateToken = newUser.createActivationToken();
-  await newUser.save({ validateBeforeSave: false });
+//   await newUser.save({ validateBeforeSave: false });
 
-  this.createSendToken(newUser, 200, res);
+//   this.createSendToken(newUser, 200, res);
 
-  // let activationUrl;
+// };
 
-  // if (process.env.NODE_ENV == "development") {
+// exports.login = async (req, res, next) => {
+//   const { email, password } = req.body;
 
-  //   activationUrl = `${process.env.FRONT_URL_DEV}activate/${activateToken}`;
+//   if (!email || !password) {
+//     return next(new globalError("Please provide email and password!", 400));
+//   }
 
-  // } else if(process.env.NODE_ENV =='production') {
+//   const user = await User.findOne({ email }).select("+password");
+//   if (!user || !(await user.correctPassword(password, user.password))) {
+//     return next(
+//       new globalError("Incorrect email, password or account is not active", 401)
+//     );
+//   }
 
-  //   activationUrl = `${process.env.FRONT_URL}activate/${activateToken}`;
-
-  // }
-
-  // try {
-  //   await new Email(newUser, activationUrl).send();
-
-  //   res.status(200).json({
-  //     status: "success",
-  //     message: "Token sent to email",
-  //   });
-  // } catch (err) {
-
-  //   newUser.activationToken = undefined;
-
-  //   await newUser.save({ validateBeforeSave: false });
-
-  //   return next(new globalError("There was an error sending the mail", 500));
-  // }
-};
-
-exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return next(new globalError("Please provide email and password!", 400));
-  }
-
-  const user = await User.findOne({ email }).select("+password");
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(
-      new globalError("Incorrect email, password or account is not active", 401)
-    );
-  }
-
-  this.createSendToken(user, 200, res);
-};
+//   this.createSendToken(user, 200, res);
+// };
 
 exports.loginLocal = async (req, res, next) => {
   const { familyUserId, password } = req.body;
@@ -121,32 +91,7 @@ exports.loginLocal = async (req, res, next) => {
 
   this.createSendToken(familyUser, 200, res);
 
-  // res.status(200).json({
-  //   status: "success",
-  //   data: {
-  //     familyUser,
-  //     family
-  //   }
-  // })
 };
-
-// exports.activateAccount = async (req, res, next) => {
-//   let user = await User.findOne({ activationToken: req.body.activationToken });
-
-//   console.log(req.body.activationToken);
-
-//   if (!user) {
-//     return next(new globalError("Provided wrong activationToken", 404));
-//   }
-
-//   user = await User.findByIdAndUpdate(
-//     user._id,
-//     { active: true, activationToken: undefined },
-//     { new: true }
-//   );
-
-//   createSendToken(user, 200, res);
-// };
 
 exports.protect = async (req, res, next) => {
   let token;
@@ -177,6 +122,6 @@ exports.protect = async (req, res, next) => {
   const family = await Family.findById(currentUser.family)
 
   req.familyUser = currentUser;
-  req.family = family // ? ? ? 
+  req.family = family 
   next();
 };

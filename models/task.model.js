@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
   name: String,
-  color: String,
   points: Number,
   users: [
     {

@@ -15,10 +15,6 @@ const familyUserSchema = new mongoose.Schema({
     type: String,
     enum: ["parent", "child"],
   },
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
   password: {
     type: String,
     minlength: 6,

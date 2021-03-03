@@ -6,14 +6,6 @@ const eventSchema = new mongoose.Schema({
   endDate: Date,
 });
 
-eventSchema.pre(/^find/, function (next) {
-  this.select("-__v");
-  this.populate({
-    path: "users",
-    select: "-__v -password -family",
-  });
-  next();
-});
 
 const Event = mongoose.model("Event", eventSchema);
 

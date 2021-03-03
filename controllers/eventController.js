@@ -31,7 +31,7 @@ exports.checkIfEventExistsAndAllow = async (req, res, next) => {
 exports.addEvent = async (req, res, next) => {
   const event = await Event.create(req.body);
 
-  family = await Family.findByIdAndUpdate(
+  const family = await Family.findByIdAndUpdate(
     req.family._id,
     {
       $push: { events: event._id },

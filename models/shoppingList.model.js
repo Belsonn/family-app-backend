@@ -5,10 +5,6 @@ const shoppingListSchema = new mongoose.Schema({
   list: {
     type: [
       {
-        // category: {
-        //   name: String,
-        //   icon: String
-        // },
         name: String,
         quantity: Number,
         details: String,

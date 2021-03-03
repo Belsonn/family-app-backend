@@ -1,29 +1,8 @@
 const globalError = require("./../utils/globalError");
 const Family = require("./../models/family.model");
 const authController = require("./authController");
-const User = require("./../models/user.model");
 const FamilyUser = require("./../models/familyuser.model");
 
-exports.createFamily = async (req, res, next) => {
-  const family = await Family.create({
-    name: req.body.name,
-    users: [req.user.id],
-    createdBy: req.user.id,
-  });
-
-  const user = await User.findByIdAndUpdate(
-    req.user.id,
-    { family: family.id },
-    { new: true }
-  );
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      family,
-    },
-  });
-};
 
 exports.createFamilyNoUser = async (req, res, next) => {
   let familyUser = await FamilyUser.create({
