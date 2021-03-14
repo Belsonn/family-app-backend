@@ -62,6 +62,7 @@ exports.createList = async (req, res, next) => {
     name: req.body.name,
     list: [],
     createdBy: req.familyUser._id,
+    createdAt: req.body.createdAt
   });
 
   const family = await Family.findByIdAndUpdate(

@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const dotenv = require("dotenv");
 const globalErrorHandler = require("./controllers/errorController");
 const shoppingListRouter = require("./routes/shoppingList.router");
 const familyRouter = require("./routes/family.router");
@@ -22,9 +23,11 @@ app.use("/photos/users", express.static(path.join("./photos/users")));
 
 // CORS
 app.use(cors());
+dotenv.config({ path: "./config.env" });
 
-if(process.env == "development"){
+if(process.env.NODE_ENV == "development"){
 
+  console.log("Running in DEV MODE")
   const morgan = require("morgan");
   app.use(morgan("dev"));
 
